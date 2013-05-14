@@ -5,7 +5,7 @@ before_script:
   - sudo /etc/init.d/postgresql stop
   - sudo apt-get -y --purge remove postgresql
   - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
+  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg 9.3" >> /etc/apt/sources.list.d/postgresql.list'
   - sudo apt-get update -qq
   - sudo apt-get -q -y -o Dpkg::Options::=--force-confdef install postgresql-client-9.3 postgresql-9.3 postgresql-contrib-9.3
   - sudo chmod 777 /etc/postgresql/9.3/main/pg_hba.conf
