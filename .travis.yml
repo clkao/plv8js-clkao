@@ -1,6 +1,6 @@
 before_script:
   - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-  - sudo echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
+  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
   - sudo apt-get update
   - sudo apt-get remove postgresql-9.2
   - sudo apt-get install postgresql-9.3
@@ -18,6 +18,5 @@ env:
 language: cpp
 compiler:
   - clang
-  - gcc
 
 script: make
