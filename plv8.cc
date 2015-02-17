@@ -163,6 +163,9 @@ static Local<ObjectTemplate> GetGlobalObjectTemplate();
 /* A GUC to specify a custom start up function to call */
 static char *plv8_start_proc = NULL;
 
+/* A GUC to specify V8 flags (e.g. --es_staging) */
+static char *plv8_v8_flags = NULL;
+
 /* A GUC to specify the remote debugger port */
 static int plv8_debugger_port;
 /*
@@ -195,11 +198,6 @@ void DispatchDebugMessages() {
 void
 _PG_init(void)
 {
-	V8::Initialize();
-	plv8_isolate = Isolate::New();
-	plv8_isolate->Enter();
-
-
 	HASHCTL    hash_ctl = { 0 };
 	
 	hash_ctl.keysize = sizeof(Oid);
@@ -212,6 +210,18 @@ _PG_init(void)
 							   gettext_noop("PLV8 function to run once when PLV8 is first used."),
 							   NULL,
 							   &plv8_start_proc,
+							   NULL,
+							   PGC_USERSET, 0,
+#if PG_VERSION_NUM >= 90100
+							   NULL,
+#endif
+							   NULL,
+							   NULL);
+
+	DefineCustomStringVariable("plv8.v8_flags",
+							   gettext_noop("V8 engine initialization flags (e.g. --es_staging for additional ES6 features)."),
+							   NULL,
+							   &plv8_v8_flags,
 							   NULL,
 							   PGC_USERSET, 0,
 #if PG_VERSION_NUM >= 90100
@@ -236,6 +246,14 @@ _PG_init(void)
 	RegisterXactCallback(plv8_xact_cb, NULL);
 
 	EmitWarningsOnPlaceholders("plv8");
+
+
+	if (plv8_v8_flags != NULL) {
+	      V8::SetFlagsFromString(plv8_v8_flags, strlen(plv8_v8_flags));
+	}
+	V8::Initialize();
+	plv8_isolate = Isolate::New();
+	plv8_isolate->Enter();
 }
 
 static void
