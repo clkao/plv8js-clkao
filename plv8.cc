@@ -1023,8 +1023,13 @@ static char *
 CompileDialect(const char *src, Dialect dialect)
 {
 	HandleScope		handle_scope(plv8_isolate);
-	static Local<Context>	context = Context::New(plv8_isolate, (ExtensionConfiguration*)NULL);
-	Context::Scope	context_scope(context);
+	static Persistent<Context>	context;
+	if (context.IsEmpty()) {
+	   Local<Context> ctx = Context::New(plv8_isolate, (ExtensionConfiguration*)NULL);
+	   context.Reset(plv8_isolate, ctx);
+	}
+	Local<Context> ctx = Local<Context>::New(plv8_isolate, context);
+	Context::Scope	context_scope(ctx);
 	TryCatch		try_catch;
 	Local<String>	key;
 	char		   *cresult;
@@ -1048,7 +1053,7 @@ CompileDialect(const char *src, Dialect dialect)
 			throw js_error("Unknown Dialect");
 	}
 
-	if (context->Global()->Get(key)->IsUndefined())
+	if (ctx->Global()->Get(key)->IsUndefined())
 	{
 		HandleScope		handle_scope(plv8_isolate);
 		Local<Script>	script =
@@ -1060,7 +1065,7 @@ CompileDialect(const char *src, Dialect dialect)
 			throw js_error(try_catch);
 	}
 
-	Local<Object>	compiler = Local<Object>::Cast(context->Global()->Get(key));
+	Local<Object>	compiler = Local<Object>::Cast(ctx->Global()->Get(key));
 	Local<Function>	func = Local<Function>::Cast(
 			compiler->Get(String::NewFromUtf8(plv8_isolate, "compile", String::kInternalizedString)));
 	const int		nargs = 1;
