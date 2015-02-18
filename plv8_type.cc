@@ -162,7 +162,7 @@ CreateExternalArray(void *data, ExternalArrayType array_type, int byte_size,
 	{
 		Local<ObjectTemplate> templ = ObjectTemplate::New(plv8_isolate);
 		templ->SetInternalFieldCount(1);
-		externalArray.Reset(plv8_isolate, ObjectTemplate::New(plv8_isolate));
+		externalArray.Reset(plv8_isolate, templ);
 	}
 	Local<ObjectTemplate> templ = Local<ObjectTemplate>::New(plv8_isolate, externalArray);
 	Local<Object> array = templ->NewInstance();

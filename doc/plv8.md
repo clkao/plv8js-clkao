@@ -425,7 +425,7 @@ Additional features can be enabled by setting the GUC plv8.v8_flags
 These flags are honoured once per user session when the V8 runtime is
 initialized. Compared to dialects (see below), which can be set on a
 per function base, the V8 flags cannot be changed once the runtime is
-initialized. So normally this setting should rahter be set per database,
+initialized. So normally this setting should rather be set per database,
 and not per session.
 
 Remote debugger
@@ -486,5 +486,5 @@ are supported.
 - CoffeeScript (plcoffee)
 - LiveScript (plls)
 
-With PostgreSQL 9.1 or above, you are able to load tohse dialects via CREATE
+With PostgreSQL 9.1 or above, you are able to load those dialects via CREATE
 EXTENSION command.
