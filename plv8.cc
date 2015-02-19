@@ -6,6 +6,8 @@
  *-------------------------------------------------------------------------
  */
 #include "plv8.h"
+#include <libplatform/libplatform.h>
+
 #include <new>
 
 extern "C" {
@@ -248,10 +250,13 @@ _PG_init(void)
 	EmitWarningsOnPlaceholders("plv8");
 
 
+	V8::InitializeICU();
+	Platform* platform = platform::CreateDefaultPlatform();
+	V8::InitializePlatform(platform);
+	V8::Initialize();
 	if (plv8_v8_flags != NULL) {
 	      V8::SetFlagsFromString(plv8_v8_flags, strlen(plv8_v8_flags));
 	}
-	V8::Initialize();
 	plv8_isolate = Isolate::New();
 	plv8_isolate->Enter();
 }

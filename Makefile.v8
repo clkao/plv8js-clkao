@@ -7,11 +7,11 @@
 # structure in v8 which may be different from version to another, but user
 # can specify the v8 version by AUTOV8_VERSION, too.
 #-----------------------------------------------------------------------------#
-AUTOV8_VERSION = 3.14.5
+AUTOV8_VERSION = 4.1.0
 AUTOV8_DIR = build/v8-$(AUTOV8_VERSION)
 AUTOV8_OUT = build/v8-$(AUTOV8_VERSION)/out/native
 AUTOV8_LIB = $(AUTOV8_OUT)/libv8_snapshot.a
-AUTOV8_STATIC_LIBS = libv8_base.a libv8_snapshot.a
+AUTOV8_STATIC_LIBS = libv8_base.a libv8_snapshot.a libv8_libplatform.a libv8_libbase.a libicui18n.a libicuuc.a libicudata.a
 
 SHLIB_LINK += $(addprefix $(AUTOV8_OUT)/, $(AUTOV8_STATIC_LIBS))
 
