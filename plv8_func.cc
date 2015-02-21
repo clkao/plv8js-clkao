@@ -8,6 +8,9 @@
 #include "plv8.h"
 #include "plv8_param.h"
 #include <sstream>
+#ifdef ENABLE_HEAP_SNAPSHOT
+#include "snapshot_helper.h"
+#endif
 
 extern "C" {
 #define delete		delete_
@@ -34,6 +37,9 @@ using namespace v8;
 
 static void plv8_FunctionInvoker(const FunctionCallbackInfo<v8::Value>& args) throw();
 static void plv8_Elog(const FunctionCallbackInfo<v8::Value>& args);
+#ifdef ENABLE_HEAP_SNAPSHOT
+static void plv8_WriteSnapshot(const FunctionCallbackInfo<v8::Value>& args);
+#endif
 static void plv8_Execute(const FunctionCallbackInfo<v8::Value>& args);
 static void plv8_Prepare(const FunctionCallbackInfo<v8::Value>& args);
 static void plv8_PlanCursor(const FunctionCallbackInfo<v8::Value>& args);
@@ -243,6 +249,9 @@ SetupPlv8Functions(Handle<ObjectTemplate> plv8)
 		PropertyAttribute(ReadOnly | DontEnum | DontDelete);
 
 	SetCallback(plv8, "elog", plv8_Elog, attrFull);
+#ifdef ENABLE_HEAP_SNAPSHOT
+	SetCallback(plv8, "write_snapshot", plv8_WriteSnapshot, attrFull);
+#endif
 	SetCallback(plv8, "execute", plv8_Execute, attrFull);
 	SetCallback(plv8, "prepare", plv8_Prepare, attrFull);
 	SetCallback(plv8, "return_next", plv8_ReturnNext, attrFull);
@@ -358,6 +367,23 @@ plv8_Elog(const FunctionCallbackInfo<v8::Value>& args)
 
 	args.GetReturnValue().Set(Undefined(plv8_isolate));
 }
+
+/*
+ * plv8.write_snapshot(fileName)
+ */
+#ifdef ENABLE_HEAP_SNAPSHOT
+static void
+plv8_WriteSnapshot(const FunctionCallbackInfo<v8::Value>& args)
+{
+	if (args.Length() != 1) {
+		args.GetReturnValue().Set(plv8_isolate->ThrowException(String::NewFromUtf8(plv8_isolate, "usage: plv8.write_snapshot(fileName)")));
+		return;
+	}
+	CString fileName(args[0]);
+	bool res = WriteSnapshotHelper(plv8_isolate, (const char*)fileName);
+	args.GetReturnValue().Set(Boolean::New(plv8_isolate, res));
+}
+#endif
 
 static Datum
 value_get_datum(Handle<v8::Value> value, Oid typid, char *isnull)
