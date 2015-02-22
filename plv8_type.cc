@@ -496,6 +496,15 @@ ToScalarValue(Datum datum, bool isnull, plv8_type *type)
 		return result;
 	}
 #endif
+#if PG_VERSION_NUM >= 90400
+	case JSONBOID:
+	{
+		Local<v8::Value>	jsonString = ToString(datum, type);
+		JSONObject JSON;
+		Local<v8::Value> result = Local<v8::Value>::New(plv8_isolate, JSON.Parse(jsonString));
+		return result;
+	}
+#endif
 	default:
 		return ToString(datum, type);
 	}
